@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>TimeToDouble</title>
+  <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script language="javascript" type="text/javascript" src="web3.min.js"></script>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Time To Double Your ETH</h1>
+    <h2 id="Account">Here is information</h2>
+    <h2 id="info"></h2>
+    <label for="name" class="col-lg-2 control-label">Your guess: </label>
+    <input id="guess" type="text">
+    <label for="name" class="col-lg-2 control-label">(0 or 1)</label>
+    <p>
+      <button id="button">Place a bet</button>
+      <button id="button1">Get Balance</button>
+  </div>
+
+  <script>
+    // Start here
+    // sudo /usr/sbin/apachectl start
+    // sudo /usr/sbin/apachectl stop
+    window.addEventListener('load', function() {
+      if (!window.web3) {
+        window.alert('Please install MetaMask first.');
+        return;
+      } else {
+        console.log("MetaMask has installed")
+      }
+
+      if (typeof web3 !== 'undefined') {
+        if (web3.currentProvider.isMetaMask === true) {
+          // alert("Hello! MetaMask is OK!");
+          web3.setProvider(new web3.providers.HttpProvider());
+
+          console.log('MetaMask is active')
+          ethereum.autoRefreshOnNetworkChange = false
+          ethereum.enable().then(function(accounts) {
+              console.log("MetaMask account has been connected")
+              getBalance();
+            })
+            .catch(function(error) {
+              // Handle error. Likely the user rejected the login
+              console.error(error)
+              console.log("MetaMask denied")
+            })
+        } else {
+          alert("Hello! MetaMask is not available");
+          console.log('MetaMask is not available')
+        }
+      } else {
+        alert("Hello! I am an alert box!!");
+      }
+    })
+
+    function getBalance() {
+      var wei, balance
+      try {
+        web3.eth.getAccounts(function(err, accounts) {
+          web3.eth.getBalance(accounts[0], function(error, wei) {
+            if (!error) {
+              var balance = web3.fromWei(wei, 'ether');
+              $("#Account").html('You have ' + balance + ' ETH');
+              console.log('This is balance - ' + balance + 'ETH')
+            }
+          })
+        });
+      } catch (err) {
+        console.log('This is balance - ' + err + 'ETH')
+      }
+    }
+  </script>
+
+  <script type="text/javascript">
+    web3.version.getNetwork((err, netId) => {
+      switch (netId) {
+        case "1":
+          console.log('This is mainnet')
+          break
+        case "2":
+          console.log('This is the deprecated Morden test network.')
+          break
+        case "3":
+          console.log('This is the ropsten test network.')
+          break
+        case "4":
+          console.log('This is the Rinkeby test network.')
+          break
+        case "42":
+          console.log('This is the Kovan test network.')
+          break
+        default:
+          console.log('This is an unknown network.')
+      }
+    })
+  </script>
+
+  <script>
+    var timeToDouble = web3.eth.contract([{
+        "constant": false,
+        "inputs": [],
+        "name": "kill",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [{
+          "name": "userInput",
+          "type": "uint256"
+        }],
+        "name": "placeBet",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [{
+            "indexed": false,
+            "name": "result",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "flag",
+            "type": "uint256"
+          }
+        ],
+        "name": "BetResult",
+        "type": "event"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "getOwnerBalance",
+        "outputs": [{
+          "name": "",
+          "type": "uint256"
+        }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "owner",
+        "outputs": [{
+          "name": "",
+          "type": "address"
+        }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ], {
+      gasPrice: '20000000000'
+    });
+
+    var toDouble = timeToDouble.at('0xc7eadacfb91934ef2fb040eb6cdb6828c9e2a5f7');
+    var toDoubleEvent = toDouble.BetResult();
+
+    toDoubleEvent.watch(function(error, result) {
+      if (!error) {
+        getBalance();
+        $("#info").html('The result from server is:' + result.args.result + ', The refund is: ' + web3.fromWei(result.args.amount, "ether") + ', Server flag:' + result.args.flag);
+      } else {
+        console.log(error);
+      }
+    });
+
+    $("#button").click(function() {
+      web3.eth.getAccounts(function(err, res) {
+        console.log('this is the account - ' + res[0]);
+        $("#info").html('Sending the transaction, please wait.....');
+        toDouble.placeBet.sendTransaction($("#guess").val(), {
+          from: res[0].coinbase,
+          to: "0xc7eadacfb91934ef2fb040eb6cdb6828c9e2a5f7",
+          value: web3.toWei(1.0, "ether")
+        }, function(error, result) {
+          if (!error) {
+            console.log("Sending transaction - " + result);
+          } else {
+            console.log(error);
+          }
+        })
+      });
+    });
+
+    $("#button1").click(function() {
+      toDouble.getOwnerBalance(function(error, result) {
+        console.log("This is the balance - " + web3.fromWei(result, "ether") + " ETH");
+      })
+    });
+  </script>
+
+</body>
+
+</html>

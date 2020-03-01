@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>He Zhou</title>
+  <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script language="javascript" type="text/javascript" src="web3.min.js"></script>
+</head>
+
+<body>
+
+  <script>
+    // Start here
+    // sudo /usr/sbin/apachectl start
+    // sudo /usr/sbin/apachectl stop
+    window.addEventListener('load', function() {
+      if (!window.web3) {
+        //用來判斷你是否安裝了metamask
+        window.alert('Please install MetaMask first.');
+        //如果沒有會去提示你先去安裝
+        return;
+      } else {
+        console.log("MetaMask has installed")
+      }
+
+      // 检查web3是否已经注入到(Mist/MetaMask)
+      if (typeof web3 !== 'undefined') {
+        // 使用 Mist/MetaMask 的提供者
+        if (web3.currentProvider.isMetaMask === true) {
+          // alert("Hello! MetaMask is OK!");
+          web3.setProvider(new web3.providers.HttpProvider());
+
+          // web3.eth.getAccounts(function(err, res) {
+          //   console.log('this is the account ' + res[0].coinbase);
+          // });
+          // transaction = ({
+          //   from: web3js.givenProvider.selectedAddress,
+          //   to: "0x07D62a36D35261AfEcF6cb89382D393a398edc1a",
+          //   value: web3js.utils.toWei("0.01", "ether")
+          // })
+
+          console.log('MetaMask is active')
+          ethereum.autoRefreshOnNetworkChange = false
+          ethereum.enable().then(function(accounts) {
+              console.log("MetaMask account has been connected")
+            })
+            .catch(function(error) {
+              // Handle error. Likely the user rejected the login
+              console.error(error)
+              console.log("MetaMask denied")
+            })
+        } else {
+          alert("Hello! MetaMask is not available");
+          console.log('MetaMask is not available')
+        }
+      } else {
+        alert("Hello! I am an alert box!!");
+        // 处理用户没安装的情况， 比如显示一个消息
+        // 告诉他们要安装 MetaMask 来使用我们的应用
+      }
+      // 现在你可以启动你的应用并自由访问 Web3.js:
+      // startApp()
+    })
+
+    function getBalance() {
+      var wei, balance
+      try {
+        web3.eth.getAccounts(function(err, accounts) {
+          web3.eth.getBalance(accounts[0], function(error, wei) {
+            if (!error) {
+              var balance = web3.fromWei(wei, 'ether');
+              console.log('This is balance - ' + balance + 'ETH')
+            }
+          })
+        });
+      } catch (err) {
+        console.log('This is balance - ' + err + 'ETH')
+      }
+    }
+  </script>
+
+  <script type="text/javascript">
+    web3.version.getNetwork((err, netId) => {
+      switch (netId) {
+        case "1":
+          console.log('This is mainnet')
+          break
+        case "2":
+          console.log('This is the deprecated Morden test network.')
+          break
+        case "3":
+          console.log('This is the ropsten test network.')
+          break
+        case "4":
+          console.log('This is the Rinkeby test network.')
+          break
+        case "42":
+          console.log('This is the Kovan test network.')
+          break
+        default:
+          console.log('This is an unknown network.')
+      }
+    })
+  </script>
+  <div class="container">
+    <h1>Info Contract</h1>
+    <h2 id="info"></h2>
+    <label for="name" class="col-lg-2 control-label">Name: </label>
+    <input id="name" type="text">
+    <label for="name" class="col-lg-2 control-label">Age: </label>
+    <input id="age" type="text">
+    <button id="button">Update Info</button>
+    <button id="button1" onClick="getBalance();">Get Address</button>
+    <button id="button2">Send money</button>
+    <button id="button3">Get Balance</button>
+  </div>
+  <script>
+    var infoContract = web3.eth.contract([{
+        "constant": true,
+        "inputs": [],
+        "name": "getOwnerBalance",
+        "outputs": [{
+          "name": "",
+          "type": "uint256"
+        }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "getInfo",
+        "outputs": [{
+            "name": "",
+            "type": "string"
+          },
+          {
+            "name": "",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [{
+            "name": "_fName",
+            "type": "string"
+          },
+          {
+            "name": "_age",
+            "type": "uint256"
+          }
+        ],
+        "name": "setInfo",
+        "outputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "_owner",
+        "outputs": [{
+          "name": "",
+          "type": "address"
+        }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "getInvoker",
+        "outputs": [{
+          "name": "",
+          "type": "address"
+        }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [{
+          "name": "",
+          "type": "address"
+        }],
+        "name": "balance",
+        "outputs": [{
+          "name": "",
+          "type": "uint256"
+        }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "fallback"
+      },
+      {
+        "anonymous": false,
+        "inputs": [{
+            "indexed": false,
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "name": "age",
+            "type": "uint256"
+          }
+        ],
+        "name": "Instructor",
+        "type": "event"
+      },
+      {
+        "anonymous": false,
+        "inputs": [{
+          "indexed": false,
+          "name": "amount",
+          "type": "uint256"
+        }],
+        "name": "Money",
+        "type": "event"
+      }
+    ], {
+      gasPrice: '20000000000'
+    });
+
+    var info = infoContract.at('0xf2fb9b473662ac3155d5ffc3ecaebd87f4390895');
+
+    // info.getInfo(function(error, result) {
+    //   if (!error) {
+    //     $("#info").html(result[0] + ' (' + result[1] + ' years old)');
+    //     console.log(result);
+    //   } else {
+    //     console.error('Here is the error: ' + error);
+    //   }
+    // });
+
+    var instructorEvent = info.Instructor();
+    var moneyEvent = info.Money();
+    instructorEvent.watch(function(error, result) {
+      if (!error) {
+        $("#info").html(result.args.name + ' (' + result.args.age + ' years old)');
+      } else {
+        console.log(error);
+      }
+    });
+
+    moneyEvent.watch(function(error, result) {
+      if (!error) {
+        $("#info").html(web3.fromWei(result.args.amount, "ether") + ' ETH');
+      } else {
+        console.log(error);
+      }
+    });
+
+    $("#button").click(function() {
+      info.setInfo($("#name").val(), $("#age").val()).on('error', console.error);
+    });
+
+    // $("#button1").click(function() {
+    //   info.getInvoker(function(error, result) {
+    //     console.log("This is the address - " + result);
+    //   })
+    // });
+    //
+    $("#button2").click(function() {
+      web3.eth.getAccounts(function(err, res) {
+        console.log('this is the account - ' + res[0]);
+        var transaction = ({
+          from: res[0].coinbase,
+          to: "0xf2fb9b473662ac3155d5ffc3ecaebd87f4390895",
+          value: web3.toWei(0.5, "ether")
+        })
+        web3.eth.sendTransaction(transaction)
+      });
+    });
+
+    $("#button3").click(function() {
+      info.getOwnerBalance(function(error, result) {
+        console.log("This is the balance - " + web3.fromWei(result, "ether") + " ETH");
+      })
+    });
+  </script>
+
+</body>
+
+</html>
