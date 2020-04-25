@@ -5,22 +5,178 @@
   <meta charset="UTF-8">
   <title>TimeToDouble</title>
   <script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!-- #region datatables files -->
+  <!-- <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
+  <script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script> -->
+  <!-- #endregion -->
   <script language="javascript" type="text/javascript" src="web3.min.js"></script>
+  <link href="mycss.css" rel="stylesheet">
 </head>
+<style>
+  button {
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 12px;
+  }
 
-<body>
+  /* Gray */
+  .buttonGray {
+    padding: 10px;
+    margin: 4px 4px;
+    font-size: 24px;
+    background-color: #555555;
+    border-radius: 8px;
+  }
+
+  /* Black */
+  input[type=text],
+  select {
+    width: 55px;
+    padding: 12px 20px;
+    margin: 8px 8px;
+    font-size: 24px;
+    color: black;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+</style>
+
+<body style="background-color: #477148;" text="white">
   <div class="container">
-    <h1>Time To Double Your ETH</h1>
-    <h2 id="Account">Here is information</h2>
-    <h2 id="info"></h2>
-    <label for="name" class="col-lg-2 control-label">Your guess: </label>
-    <input id="guess" type="text">
-    <label for="name" class="col-lg-2 control-label">(0 or 1)</label>
-    <p>
+    <p>&nbsp</p>
+    <h1 align="center">Time To Double Your ETH</h1>
+    <table align="center" cellspacing="40" cellpadding="0">
+      <tbody>
+        <tr>
+          <td bgcolor="#BBBBBB" align="center" style="padding: 20px;-moz-border-radius: 5px;
+-webkit-border-radius: 5px;" width="50%">
+            <h2 id="accountinfo">&nbsp;</h2>
+            <h2 id="AccountBalance">&nbsp;</h2>
+            <h2>In your account</h2>
+            <h2 id="info"></h2>
+          </td>
+          <td bgcolor="#BBBBBB" align="center" style="padding: 20px;-moz-border-radius: 5px;
+-webkit-border-radius: 5px;" width="50%">
+            <h2>Winning chance</h2>
+            <h2 id="chance">16.67%</h2>
+            <h2>You can win</h2>
+            <h2 id="result">2.30ETH</h2>
+            <h2>Info from Server</h2>
+            <h2 id="information">Infomation</h2>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p align="center">Choose the dice number(s) to bet on</p>
+    <table align="center" cellspacing="10" cellpadding="0" class="choose">
+      <tbody>
+        <tr>
+          <td><span class="option current" data-number="1"><img src="image/color1.png" /></span></td>
+          <td><span class="option" data-number="2"><img src="image/color2.png" /></span></td>
+          <td><span class="option" data-number="3"><img src="image/color3.png" /></span></td>
+          <td><span class="option" data-number="4"><img src="image/color4.png" /></span></td>
+          <td><span class="option" data-number="5"><img src="image/color5.png" /></span></td>
+          <td><span class="option" data-number="6"><img src="image/color6.png" /></span></td>
+        </tr>
+      </tbody>
+    </table>
+    <script>
+      var chooseInt = [1];
+      var bet = 1;
+      // chooseInt.push(1);
+      $("#result").html(((bet / (chooseInt.length / 6) * 0.95)).toFixed(2) + "ETH");
+      $(document).ready(function() {
+        $('.choose .option').click(function() {
+          var length = $(".choose .current").length;
+          var has = $(this).hasClass('current');
+          if (has) {
+            if (length > 1) {
+              $(this).removeClass('current');
+              chooseInt = chooseInt.filter(item => item != $(this).attr('data-number')) // remove value from array
+              $("#chance").html((chooseInt.length * 100 / 6).toFixed(2) + '%'); // calculate the winning chance
+              $("#result").html(((bet / (chooseInt.length / 6) * 0.95)).toFixed(2) + "ETH"); // calculate how much can win
+              $('.choose .current').each(function(i, n) {
+                console.log("已选择:" + $(n).data('number'));
+              });
+              console.log("chooseInt is " + chooseInt);
+            } else {
+              console.log("最小限制");
+            }
+          } else {
+            if (length < 5) {
+              $(this).addClass('current');
+              chooseInt.push($(this).attr('data-number'));
+              $("#chance").html((chooseInt.length * 100 / 6).toFixed(2) + '%');
+              $("#result").html(((bet / (chooseInt.length / 6) * 0.95)).toFixed(2) + "ETH");
+              $('.choose .current').each(function(i, n) {
+                console.log("已选择:" + $(n).data('number'));
+              });
+              console.log("chooseInt is " + chooseInt);
+            } else {
+              console.log("最大限制");
+            }
+          }
+        })
+      });
+    </script>
+
+    <p align="center">
+      <button id="plusbutton" class="button buttonGray">&nbsp+&nbsp</button>
+      <input id="bet" type="text" align="center" value="1" disabled>
+      <font size="6">ETH</font>
+      <button id="minusbutton" class="button buttonGray">&nbsp-&nbsp</button>
+    </p>
+    <p align="center">
       <button id="button">Place a bet</button>
       <button id="button1">Get Balance</button>
+    </p>
   </div>
-
+  <script>
+    $("#plusbutton").click(function() {
+      bet = $("#bet").val();
+      if (bet < 9) {
+        bet++;
+        $("#bet").val(bet);
+        $("#result").html(((bet / (chooseInt.length / 6) * 0.95)).toFixed(2) + "ETH"); // calculate how much can win
+      }
+    });
+    $("#minusbutton").click(function() {
+      bet = $("#bet").val();
+      if (bet > 1) {
+        bet--;
+        $("#bet").val(bet);
+        $("#result").html(((bet / (chooseInt.length / 6) * 0.95)).toFixed(2) + "ETH"); // calculate how much can win
+      }
+    });
+  </script>
+  <table id="datas" width="50%" align="center" cellspacing="5" cellpadding="0" align="center">
+    <!-- <thead>
+      <tr bgcolor="#888888" height="50">
+        <td align="center">User</td>
+        <td align="center">Amount</td>
+        <td align="center">Result</td>
+        <td align="center">Refund</td>
+      </tr>
+    </thead> -->
+    <tbody>
+      <tr id="template" bgcolor="#444444" height="50">
+        <td align="center" id="sender">User</td>
+        <td align="center" id="amount">Amount</td>
+        <td align="center" id="result">Result</td>
+        <td align="center" id="refund">Refund</td>
+      </tr>
+    </tbody>
+  </table>
   <script>
     // Start here
     // sudo /usr/sbin/apachectl start
@@ -43,6 +199,8 @@
           ethereum.enable().then(function(accounts) {
               console.log("MetaMask account has been connected")
               getBalance();
+              myTimer();
+
             })
             .catch(function(error) {
               // Handle error. Likely the user rejected the login
@@ -65,7 +223,7 @@
           web3.eth.getBalance(accounts[0], function(error, wei) {
             if (!error) {
               var balance = web3.fromWei(wei, 'ether');
-              $("#Account").html('You have ' + balance + ' ETH');
+              $("#AccountBalance").html('You have ' + balance + ' ETH');
               console.log('This is balance - ' + balance + 'ETH')
             }
           })
@@ -80,21 +238,27 @@
     web3.version.getNetwork((err, netId) => {
       switch (netId) {
         case "1":
+          $("#accountinfo").html('This is mainnet');
           console.log('This is mainnet')
           break
         case "2":
+          $("#accountinfo").html('This is the deprecated Morden test network.');
           console.log('This is the deprecated Morden test network.')
           break
         case "3":
+          $("#accountinfo").html('This is the ropsten test network.');
           console.log('This is the ropsten test network.')
           break
         case "4":
+          $("#accountinfo").html('This is the Rinkeby test network.');
           console.log('This is the Rinkeby test network.')
           break
         case "42":
+          $("#accountinfo").html('This is the Kovan test network.');
           console.log('This is the Kovan test network.')
           break
         default:
+          $("#accountinfo").html('This is an unknown network.');
           console.log('This is an unknown network.')
       }
     })
@@ -102,6 +266,34 @@
 
   <script>
     var timeToDouble = web3.eth.contract([{
+        "constant": true,
+        "inputs": [{
+          "name": "",
+          "type": "bytes32"
+        }],
+        "name": "paymentStructs",
+        "outputs": [{
+            "name": "sender",
+            "type": "address"
+          },
+          {
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "name": "result",
+            "type": "uint256"
+          },
+          {
+            "name": "refund",
+            "type": "uint256"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
         "constant": false,
         "inputs": [],
         "name": "kill",
@@ -109,45 +301,6 @@
         "payable": false,
         "stateMutability": "nonpayable",
         "type": "function"
-      },
-      {
-        "constant": false,
-        "inputs": [{
-          "name": "userInput",
-          "type": "uint256"
-        }],
-        "name": "placeBet",
-        "outputs": [],
-        "payable": true,
-        "stateMutability": "payable",
-        "type": "function"
-      },
-      {
-        "inputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "constructor"
-      },
-      {
-        "anonymous": false,
-        "inputs": [{
-            "indexed": false,
-            "name": "result",
-            "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "name": "amount",
-            "type": "uint256"
-          },
-          {
-            "indexed": false,
-            "name": "flag",
-            "type": "uint256"
-          }
-        ],
-        "name": "BetResult",
-        "type": "event"
       },
       {
         "constant": true,
@@ -172,18 +325,135 @@
         "payable": false,
         "stateMutability": "view",
         "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [{
+          "name": "",
+          "type": "uint256"
+        }],
+        "name": "paymentKeyList",
+        "outputs": [{
+          "name": "",
+          "type": "bytes32"
+        }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "getHistory",
+        "outputs": [{
+            "name": "",
+            "type": "uint256"
+          },
+          {
+            "name": "",
+            "type": "address[]"
+          },
+          {
+            "name": "",
+            "type": "uint256[]"
+          },
+          {
+            "name": "",
+            "type": "uint256[]"
+          },
+          {
+            "name": "",
+            "type": "uint256[]"
+          }
+        ],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": true,
+        "inputs": [],
+        "name": "getPaymentCount",
+        "outputs": [{
+          "name": "paymentCount",
+          "type": "uint256"
+        }],
+        "payable": false,
+        "stateMutability": "view",
+        "type": "function"
+      },
+      {
+        "constant": false,
+        "inputs": [{
+          "name": "userInput",
+          "type": "uint256[]"
+        }],
+        "name": "placeBet",
+        "outputs": [],
+        "payable": true,
+        "stateMutability": "payable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "payable": false,
+        "stateMutability": "nonpayable",
+        "type": "constructor"
+      },
+      {
+        "anonymous": false,
+        "inputs": [{
+            "indexed": false,
+            "name": "result",
+            "type": "bool"
+          },
+          {
+            "indexed": false,
+            "name": "random",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "amount",
+            "type": "uint256"
+          },
+          {
+            "indexed": false,
+            "name": "flag",
+            "type": "uint256"
+          }
+        ],
+        "name": "BetResult",
+        "type": "event"
       }
     ], {
-      gasPrice: '20000000000'
+      gasPrice: '40000000000'
     });
 
-    var toDouble = timeToDouble.at('0xc7eadacfb91934ef2fb040eb6cdb6828c9e2a5f7');
+    var contractAddress = "0xfcd0b1fd33103441d93eaa693b5d70874b14f69e";
+    var toDouble = timeToDouble.at(contractAddress);
     var toDoubleEvent = toDouble.BetResult();
+    // var LogPaymentReceived = toDouble.LogPaymentReceived();
+
+    // LogPaymentReceived.watch(function(error, result) {
+    //   if (!error) {
+    //     // $("#information").html('The result is:' + result.args.sender + " ---- " + web3.fromWei(result.args.amount, "ether"));
+    //     $("#information").html('The result is:' +
+    //       web3.fromWei(result.args.amount, "ether"));
+    //   } else {
+    //     console.log(error);
+    //   }
+    // });
 
     toDoubleEvent.watch(function(error, result) {
       if (!error) {
         getBalance();
-        $("#info").html('The result from server is:' + result.args.result + ', The refund is: ' + web3.fromWei(result.args.amount, "ether") + ', Server flag:' + result.args.flag);
+        // $("#info").html('The result from server is:' + result.args.result + ', The refund is: ' + web3.fromWei(result.args.amount, "ether") + ', Server flag:' + result.args.flag);
+        if (result.args.result) {
+          $("#info").html('The result is:' + result.args.random + ', <p>You win ' + web3.fromWei(result.args.amount, "ether"));
+        } else {
+          $("#info").html('The result is:' + result.args.random + ', <p>You lose ');
+        }
       } else {
         console.log(error);
       }
@@ -192,18 +462,21 @@
     $("#button").click(function() {
       web3.eth.getAccounts(function(err, res) {
         console.log('this is the account - ' + res[0]);
-        $("#info").html('Sending the transaction, please wait.....');
-        toDouble.placeBet.sendTransaction($("#guess").val(), {
-          from: res[0].coinbase,
-          to: "0xc7eadacfb91934ef2fb040eb6cdb6828c9e2a5f7",
-          value: web3.toWei(1.0, "ether")
-        }, function(error, result) {
-          if (!error) {
-            console.log("Sending transaction - " + result);
-          } else {
-            console.log(error);
-          }
-        })
+        console.log('the array is - ' + chooseInt);
+        toDouble.placeBet.sendTransaction(chooseInt, {
+            from: res[0].coinbase,
+            to: contractAddress,
+            value: web3.toWei(bet * 1000000000000000000, "wei")
+          },
+          function(error, result) {
+            if (!error) {
+              $("#info").html('Sending the transaction, please wait.....');
+              console.log("Sending transaction - " + result);
+            } else {
+              $("#info").html('');
+              console.log(error);
+            }
+          })
       });
     });
 
@@ -211,7 +484,30 @@
       toDouble.getOwnerBalance(function(error, result) {
         console.log("This is the balance - " + web3.fromWei(result, "ether") + " ETH");
       })
+      // $('#datas').DataTable().clear().draw();
+      // $("#template").remove();
     });
+    var myVar = setInterval(myTimer, 10000);
+
+    function myTimer() {
+      toDouble.getHistory(function(error, result) {
+        let [length, senders, amounts, results, refunds] = result;
+        var table = document.getElementById("datas");
+        console.log("row number is " + table.rows.length);
+        for (var x = table.rows.length - 1; x > 0; x--) {
+          table.deleteRow(x);
+        }
+        for (var i = 0; i < length; i++) {
+          var row = $("#template").clone();
+          row.find("#sender").text(senders[i]);
+          row.find("#amount").text(web3.fromWei(amounts[i], "ether") + " ETH");
+          row.find("#result").text(results[i]);
+          row.find("#refund").text(web3.fromWei(refunds[i], "ether") + " ETH");
+          row.appendTo("#datas");
+          console.log("No. - " + i + " sender: " + senders[i] + " amount: " + web3.fromWei(amounts[i], "ether") + " ETH" + " result: " + results[i] + " refund: " + web3.fromWei(refunds[i], "ether") + " ETH");
+        }
+      })
+    }
   </script>
 
 </body>

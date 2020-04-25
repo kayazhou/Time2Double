@@ -1,0 +1,10 @@
+
+body {
+    font: normal 15px Times New Roman, Times, serif;
+}
+buttoncorner {border-radius: 12px;}
+
+.choose .option { cursor: pointer; display: inline-block; -webkit-filter: grayscale(100%); -moz-filter: grayscale(100%); -ms-filter: grayscale(100%); -o-filter: grayscale(100%); filter: progid:DXImageTransform.Microsoft.BasicImage(grayscale=1);  _filter:none; }
+.choose .option img { width: 50px; height: 50px; display: block; }
+
+.choose .option.current { -webkit-filter: grayscale(0%); -moz-filter: grayscale(0%); -ms-filter: grayscale(0%); -o-filter: grayscale(0%); filter: none;  _filter:none; }
